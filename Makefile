@@ -6,8 +6,8 @@ CC = gcc
 FC = gfortran
 AR = ar
 
-CFLAGS  = -O0 -g
-FFLAGS  = -std=f2018 -O0 -g -fcheck=all -fmax-errors=1
+CFLAGS  = -O2
+FFLAGS  = -O2 -std=f2018
 ARFLAGS = rcs
 LDFLAGS = -L$(PREFIX)/lib
 LDLIBS  = -lnng

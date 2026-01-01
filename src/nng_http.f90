@@ -4,7 +4,7 @@
 ! Licence: ISC
 module nng_http
     !! Bindings to `supplemental/http/http.h`.
-    use :: nng, only: c_bool, c_char, c_int, c_ptr, c_size_t, c_uint16_t
+    use :: nng, only: c_bool, c_char, c_funptr, c_int, c_ptr, c_size_t, c_uint16_t
     use :: nng_util
     implicit none (type, external)
     private
@@ -86,6 +86,7 @@ module nng_http
     public :: nng_http_conn_write_all
     public :: nng_http_conn_write_req
     public :: nng_http_conn_write_res
+    public :: nng_http_handler_alloc
     public :: nng_http_handler_alloc_directory
     public :: nng_http_handler_alloc_file
     public :: nng_http_handler_alloc_redirect
@@ -93,6 +94,7 @@ module nng_http
     public :: nng_http_handler_collect_body
     public :: nng_http_handler_free
     public :: nng_http_handler_get_data
+    public :: nng_http_handler_set_data
     public :: nng_http_handler_set_host
     public :: nng_http_handler_set_method
     public :: nng_http_handler_set_tree
@@ -105,9 +107,13 @@ module nng_http
     public :: nng_http_req_free
     public :: nng_http_req_get_data
     public :: nng_http_req_get_header
+    public :: nng_http_req_get_header_
     public :: nng_http_req_get_method
+    public :: nng_http_req_get_method_
     public :: nng_http_req_get_uri
+    public :: nng_http_req_get_uri_
     public :: nng_http_req_get_version
+    public :: nng_http_req_get_version_
     public :: nng_http_req_reset
     public :: nng_http_req_set_data
     public :: nng_http_req_set_header
@@ -127,6 +133,7 @@ module nng_http
     public :: nng_http_res_get_reason_
     public :: nng_http_res_get_status
     public :: nng_http_res_get_version
+    public :: nng_http_res_get_version_
     public :: nng_http_res_reset
     public :: nng_http_res_set_data
     public :: nng_http_res_set_header
@@ -284,6 +291,16 @@ module nng_http
             type(c_ptr), intent(in), value :: aio
         end subroutine nng_http_conn_write_res
 
+        ! int nng_http_handler_alloc(nng_http_handler **hp, const char *path, void (*fn)(nng_aio *aio))
+        function nng_http_handler_alloc(hp, path, fn) bind(c, name='nng_http_handler_alloc')
+            import :: c_char, c_funptr, c_int, c_ptr
+            implicit none
+            type(c_ptr),       intent(out)       :: hp
+            character(c_char), intent(in)        :: path
+            type(c_funptr),    intent(in), value :: fn
+            integer(c_int)                       :: nng_http_handler_alloc
+        end function nng_http_handler_alloc
+
         ! int nng_http_handler_alloc_directory(nng_http_handler **hp, const char *path, const char *dirname)
         function nng_http_handler_alloc_directory(hp, path, dirname) bind(c, name='nng_http_handler_alloc_directory')
             import :: c_char, c_int, c_ptr
@@ -351,6 +368,16 @@ module nng_http
             type(c_ptr), intent(in), value :: h
             type(c_ptr)                    :: nng_http_handler_get_data
         end function nng_http_handler_get_data
+
+        ! int nng_http_handler_set_data(nng_http_handler *h, void *data, void (*dtor)(void *))
+        function nng_http_handler_set_data(h, data, dtor) bind(c, name='nng_http_handler_set_data')
+            import :: c_funptr, c_int, c_ptr
+            implicit none
+            type(c_ptr),    intent(in), value :: h
+            type(c_ptr),    intent(in), value :: data
+            type(c_funptr), intent(in), value :: dtor
+            integer(c_int)                    :: nng_http_handler_set_data
+        end function nng_http_handler_set_data
 
         ! int nng_http_handler_set_host(nng_http_handler *h, const char *host)
         function nng_http_handler_set_host(h, host) bind(c, name='nng_http_handler_set_host')
@@ -449,37 +476,37 @@ module nng_http
         end subroutine nng_http_req_get_data
 
         ! const char *nng_http_req_get_header(nng_http_req *req, const char *key)
-        function nng_http_req_get_header(req, key) bind(c, name='nng_http_req_get_header')
+        function nng_http_req_get_header_(req, key) bind(c, name='nng_http_req_get_header')
             import :: c_char, c_ptr
             implicit none
             type(c_ptr),       intent(in), value :: req
             character(c_char), intent(in)        :: key
-            type(c_ptr)                          :: nng_http_req_get_header
-        end function nng_http_req_get_header
+            type(c_ptr)                          :: nng_http_req_get_header_
+        end function nng_http_req_get_header_
 
         ! const char *nng_http_req_get_method(nng_http_req *req)
-        function nng_http_req_get_method(req) bind(c, name='nng_http_req_get_method')
+        function nng_http_req_get_method_(req) bind(c, name='nng_http_req_get_method')
             import :: c_ptr
             implicit none
             type(c_ptr), intent(in), value :: req
-            type(c_ptr)                    :: nng_http_req_get_method
-        end function nng_http_req_get_method
+            type(c_ptr)                    :: nng_http_req_get_method_
+        end function nng_http_req_get_method_
 
         ! const char *nng_http_req_get_uri(nng_http_req *req)
-        function nng_http_req_get_uri(req) bind(c, name='nng_http_req_get_uri')
+        function nng_http_req_get_uri_(req) bind(c, name='nng_http_req_get_uri')
             import :: c_ptr
             implicit none
             type(c_ptr), intent(in), value :: req
-            type(c_ptr)                    :: nng_http_req_get_uri
-        end function nng_http_req_get_uri
+            type(c_ptr)                    :: nng_http_req_get_uri_
+        end function nng_http_req_get_uri_
 
         ! const char *nng_http_req_get_version(nng_http_req *req)
-        function nng_http_req_get_version(req) bind(c, name='nng_http_req_get_version')
+        function nng_http_req_get_version_(req) bind(c, name='nng_http_req_get_version')
             import :: c_ptr
             implicit none
             type(c_ptr), intent(in), value :: req
-            type(c_ptr)                    :: nng_http_req_get_version
-        end function nng_http_req_get_version
+            type(c_ptr)                    :: nng_http_req_get_version_
+        end function nng_http_req_get_version_
 
         ! void nng_http_req_reset(nng_http_req *req)
         subroutine nng_http_req_reset(req) bind(c, name='nng_http_req_reset')
@@ -623,12 +650,12 @@ module nng_http
         end function nng_http_res_get_status
 
         ! const char *nng_http_res_get_version(nng_http_res *res)
-        function nng_http_res_get_version(res) bind(c, name='nng_http_res_get_version')
+        function nng_http_res_get_version_(res) bind(c, name='nng_http_res_get_version')
             import :: c_ptr
             implicit none
             type(c_ptr), intent(in), value :: res
-            type(c_ptr)                    :: nng_http_res_get_version
-        end function nng_http_res_get_version
+            type(c_ptr)                    :: nng_http_res_get_version_
+        end function nng_http_res_get_version_
 
         ! void nng_http_res_reset(nng_http_res *res)
         subroutine nng_http_res_reset(res) bind(c, name='nng_http_res_reset')
@@ -790,6 +817,51 @@ module nng_http
         end subroutine nng_http_server_stop
     end interface
 contains
+    ! const char *nng_http_req_get_header(nng_http_req *req, const char *key)
+    function nng_http_req_get_header(req, key) result(str)
+        type(c_ptr),  intent(in)  :: req
+        character(*), intent(in)  :: key
+        character(:), allocatable :: str
+
+        type(c_ptr) :: ptr
+
+        ptr = nng_http_req_get_header_(req, key)
+        call c_f_str_ptr(ptr, str)
+    end function nng_http_req_get_header
+
+    ! const char *nng_http_req_get_method(nng_http_req *req)
+    function nng_http_req_get_method(req) result(str)
+        type(c_ptr),  intent(in)  :: req
+        character(:), allocatable :: str
+
+        type(c_ptr) :: ptr
+
+        ptr = nng_http_req_get_method_(req)
+        call c_f_str_ptr(ptr, str)
+    end function nng_http_req_get_method
+
+    ! const char *nng_http_req_get_uri(nng_http_req *req)
+    function nng_http_req_get_uri(req) result(str)
+        type(c_ptr),  intent(in)  :: req
+        character(:), allocatable :: str
+
+        type(c_ptr) :: ptr
+
+        ptr = nng_http_req_get_uri_(req)
+        call c_f_str_ptr(ptr, str)
+    end function nng_http_req_get_uri
+
+    ! const char *nng_http_req_get_version(nng_http_req *req)
+    function nng_http_req_get_version(req) result(str)
+        type(c_ptr),  intent(in)  :: req
+        character(:), allocatable :: str
+
+        type(c_ptr) :: ptr
+
+        ptr = nng_http_req_get_version_(req)
+        call c_f_str_ptr(ptr, str)
+    end function nng_http_req_get_version
+
     ! const char *nng_http_res_get_header(nng_http_res *res, const char *key)
     function nng_http_res_get_header(res, key) result(str)
         type(c_ptr),  intent(in)  :: res
@@ -812,4 +884,15 @@ contains
         ptr = nng_http_res_get_reason_(res)
         call c_f_str_ptr(ptr, str)
     end function nng_http_res_get_reason
+
+    ! const char *nng_http_res_get_version(nng_http_res *res)
+    function nng_http_res_get_version(res) result(str)
+        type(c_ptr), intent(in)   :: res
+        character(:), allocatable :: str
+
+        type(c_ptr) :: ptr
+
+        ptr = nng_http_res_get_version_(res)
+        call c_f_str_ptr(ptr, str)
+    end function nng_http_res_get_version
 end module nng_http
