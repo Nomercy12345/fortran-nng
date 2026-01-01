@@ -3,7 +3,7 @@
 ! Author:  Philipp Engel
 ! Licence: ISC
 module nng_pipeline0
-    !! Bindings to `protocol/pipeline0/pull.h` and protocol/pipeline0/push.
+    !! Bindings to `protocol/pipeline0/pull.h` and `protocol/pipeline0/push`.
     use :: nng, only: c_int, nng_socket
     implicit none (type, external)
     private

@@ -3,7 +3,7 @@
 ! Author:  Philipp Engel
 ! Licence: ISC
 module nng
-    !! Auto-generated Fortran 2018 interface bindings to nanomsg-ng (nng) v.1.X.
+    !! Auto-generated Fortran 2018 interface bindings to nanomsg-ng (nng) v1.11.0.
     use, intrinsic :: iso_c_binding, only: c_bool, c_char, c_funptr, c_int, c_ptr, c_size_t, &
                                            c_int8_t, c_int16_t, c_int32_t, c_int64_t, &
                                            c_null_char, c_null_funptr, c_null_ptr, c_loc

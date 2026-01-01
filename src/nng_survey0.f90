@@ -3,7 +3,7 @@
 ! Author:  Philipp Engel
 ! Licence: ISC
 module nng_survey0
-    !! Bindings to `protocol/survey0/respond.h` and ` protocol/survey0/survey.h`.
+    !! Bindings to `protocol/survey0/respond.h` and `protocol/survey0/survey.h`.
     use :: nng, only: c_int, c_null_char, nng_socket
     implicit none (type, external)
     private

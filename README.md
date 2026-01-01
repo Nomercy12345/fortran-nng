@@ -39,7 +39,7 @@ If the NNG library is installed globally, build and install the interfaces
 library simply by running:
 
 ```
-$ make PREFIX=/usr
+$ make
 $ make install PREFIX=/opt
 ```
 
