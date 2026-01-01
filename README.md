@@ -26,13 +26,13 @@ $ gfortran -I/opt/include/libfortran-nng -o example example.f90 /opt/lib/libfort
 On Linux, install NNG with development headers first:
 
 ```
-# apt-get install libnng1 libnng-dev nng-utils
+$ sudo apt-get install libnng1 libnng-dev nng-utils
 ```
 
 On FreeBSD:
 
 ```
-# pkg install net/nng
+$ doas pkg install net/nng
 ```
 
 If the NNG library is installed globally, build and install the interfaces

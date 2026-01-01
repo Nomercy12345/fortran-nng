@@ -9,7 +9,7 @@ program main
     !! simpler binary data rather than strings over the network.
     !!
     !! The program implements a simple RPC style service, which just returns the
-    !! date in UNIX time (seconds since 1970).
+    !! elapsed milliseconds since some arbitrary time in the past.
     !!
     !! Based on the NNG demo program `reqrep.c`.
     use :: nng
