@@ -30,7 +30,7 @@ program main
     select case (name)
         case ('node0'); call node0(url)
         case ('node1'); call node1(url, message)
-        case default; print '("Usage: pipeline node0|node1 <URL> <ARG> ...")'
+        case default;   print '("Usage: pipeline node0|node1 <URL> <ARG> ...")'
     end select
 contains
     subroutine fatal(rc, str)
@@ -70,8 +70,8 @@ contains
     end subroutine node0
 
     subroutine node1(url, message)
-        character(*), intent(in)         :: url
-        character(*), intent(in), target :: message
+        character(*),         intent(in) :: url
+        character(*), target, intent(in) :: message
 
         integer          :: rc
         type(nng_dialer) :: dialer

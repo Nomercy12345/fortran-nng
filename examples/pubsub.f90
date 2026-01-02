@@ -44,7 +44,7 @@ contains
         integer       :: dt(8)
 
         call date_and_time(values=dt, zone=zone)
-        write (iso8601, ISO_FMT) dt(1), dt(2), dt(3), dt(5), dt(6), dt(7), dt(8), zone(1:3), zone(4:5)
+        write (iso8601, ISO_FMT) dt(1:3), dt(5:8), zone(1:3), zone(4:5)
     end function iso8601
 
     subroutine fatal(rc, str)

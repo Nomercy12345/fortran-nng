@@ -53,7 +53,7 @@ $ make install
 ## Build Instructions
 
 If the NNG library is installed globally, build and install the interfaces
-library by running:
+library with GNU Fortran by running:
 
 ```
 $ make
@@ -106,6 +106,7 @@ fortran-nng = { git = "https://github.com/interkosmos/fortran-nng.git" }
 The following programs can be found in directory `examples/`:
 
 * **http_client**: sends an HTTP GET request and outputs the response.
+* **pair**: shows one-to-one peer relationship.
 * **pipeline**: solves producer/consumer problem with pipeline (one-way pipe).
 * **pubsub**: shows pub/sub messaging pattern.
 * **pubsub_forwarder**: implements a simple pub/sub forwarder.
@@ -119,7 +120,7 @@ $ make examples
 
 ## Compatibility
 
-The interfaces of _fortran-nng_ differ slightly from the C API:
+The _fortran-nng_ bindings differ slightly from the C API:
 
 * Derived types do not have to be initialised like in C.
 * All strings passed to the NNG interfaces have to be properly null-terminated
