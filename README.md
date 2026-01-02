@@ -1,6 +1,8 @@
 # fortran-nng
 
-[![Build](https://github.com/interkosmos/fortran-nng/actions/workflows/build.yml/badge.svg)](https://github.com/interkosmos/fortran-nng/actions/workflows/build.yml)
+![Language](https://img.shields.io/badge/-Fortran-734f96?logo=fortran&logoColor=white)
+![License](https://img.shields.io/github/license/interkosmos/fortran-nng?color=blue)
+![Build](https://github.com/interkosmos/fortran-nng/actions/workflows/build.yml/badge.svg)
 
 A collection of Fortran 2018 ISO C binding interfaces to the lightweight
 messaging library [NNG](https://nng.nanomsg.org/) **v1.11.0**:
@@ -21,7 +23,10 @@ _fortran-nng_ is installed to `/opt`, run:
 $ gfortran -I/opt/include/libfortran-nng -o example example.f90 /opt/lib/libfortran-nng.a -lnng
 ```
 
-## Build Instructions
+For Fortran bindings to nanomsg, see
+[nanofort](https://github.com/jshahbazi/nanofort).
+
+## Dependencies
 
 On Linux, install NNG with development headers first:
 
@@ -35,18 +40,41 @@ On FreeBSD:
 $ doas pkg install net/nng
 ```
 
+Alternatively, build NNG simply from source and install it to `/opt`:
+
+```
+$ git clone --depth 1 --branch v1.11 https://github.com/nanomsg/nng.git
+$ mkdir -p nng/build && cd nng/build/
+$ cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt ..
+$ make
+$ make install
+```
+
+## Build Instructions
+
 If the NNG library is installed globally, build and install the interfaces
-library simply by running:
+library by running:
 
 ```
 $ make
-$ make install PREFIX=/opt
+```
+
+If the NNG library is installed in `/opt`, pass the prefix:
+
+```
+$ make PREFIX=/opt
 ```
 
 To link against a static `libnng.a` library instead, run:
 
 ```
 $ make LDLIBS="/path/to/libnng.a -lpthread"
+```
+
+Install the _fortran-nng_ library and module files to `/opt`:
+
+```
+$ make install PREFIX=/opt
 ```
 
 ## Fortran Package Manager
@@ -72,7 +100,8 @@ fortran-nng = { git = "https://github.com/interkosmos/fortran-nng.git" }
 The following programs can be found in directory `examples/`:
 
 * **http_client**: sends an HTTP GET request and outputs the response.
-* **pubsub**: implements a simple pub/sub forwarder.
+* **pubsub**: shows pub/sub messaging pattern.
+* **pubsub_forwarder**: implements a simple pub/sub forwarder.
 * **reqrep**: demonstrates request-response pattern between client and server.
 
 Build the examples with:
@@ -89,16 +118,22 @@ The interfaces of _fortran-nng_ differ slightly from the C API:
 * All strings passed to the NNG interfaces have to be properly null-terminated
   with constant `c_null_char`, except for parameter strings already provided by
   the Fortran modules.
+* C string pointers returned by NNG functions are converted to Fortran
+  allocatable character through wrappers. The interfaces are public and end with
+  suffix `_`.
 * The prefix of `nng_log_level` enumerators has been changed from `NNG_LOG_` to
   `NNG_LOG_LEVEL_` due to conflicts with procedures of the same name.
 * The prefix of `nng_log_facility` enumerators has been changed from `NNG_LOG_` to
   `NNG_LOG_FACILITY_` due to conflicts with procedures of the same name.
+* The interfaces to the NNG log functions expect a single (non-variadic) string
+  argument only.
 
 ## References
 
 * [NNG Web Site](https://nng.nanomsg.org/)
 * [NNG Repository](https://github.com/nanomsg/nng)
-* [NNG Documentation](https://nng.nanomsg.org/man/v1.10.0/index.html) (v1.10.0)
+* [NNG API Documentation](https://nng.nanomsg.org/man/v1.10.0/index.html) (v1.10.0)
+* [Getting Started with “nng”](https://nanomsg.org/gettingstarted/nng/index.html)
 
 ## Licence
 

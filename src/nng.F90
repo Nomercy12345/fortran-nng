@@ -2254,7 +2254,7 @@ module nng
             implicit none
             type(nng_socket),  intent(in), value :: socket
             type(c_ptr),       intent(in), value :: data
-            integer(c_size_t), intent(out)       :: sizep
+            integer(c_size_t), intent(inout)     :: sizep
             integer(c_int),    intent(in), value :: flags
             integer(c_int)                       :: nng_recv
         end function nng_recv

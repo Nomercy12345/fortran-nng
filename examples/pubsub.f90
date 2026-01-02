@@ -3,75 +3,125 @@
 ! Author:  Philipp Engel
 ! Licence: ISC
 program main
-    !! Forwarder example based on the NNG demo program `pubsub_forwarder.c`.
+    !! Implementation of the pub/sub pattern. The program is based on the
+    !! example in C listed in:
     !!
-    !! This example shows how to use raw sockets to set up a forwarder or proxy for
-    !! pub/sub.
+    !!     https://nanomsg.org/gettingstarted/nng/pubsub.html
     !!
-    !! An example setup for running this example would involve the following:
+    !! Example usage:
     !!
-    !!  * Run this example binary (in the background or a terminal, etc.).
-    !!
-    !!  * In a new terminal, run:
-    !!
-    !!      $ nngcat --sub --dial "tcp://localhost:3328" --quoted
-    !!
-    !!  * In a second terminal, run:
-    !!
-    !!      $ nngcat --sub --dial "tcp://localhost:3328" --quoted
-    !!
-    !!  * In a third terminal, run:
-    !!
-    !!      for n in $(seq 0 99);
-    !!          do nngcat --pub --dial "tcp://localhost:3327" --data "$n";
-    !!      done
-    !!
+    !! ```
+    !! ./pubsub server ipc:///tmp/pubsub.ipc & server=$! && sleep 1
+    !! ./pubsub client ipc:///tmp/pubsub.ipc client0 & client0=$!
+    !! ./pubsub client ipc:///tmp/pubsub.ipc client1 & client1=$!
+    !! ./pubsub client ipc:///tmp/pubsub.ipc client2 & client2=$!
+    !! sleep 15
+    !! kill $server $client0 $client1 $client2
+    !! ```
     use :: nng
     use :: nng_pubsub0
     implicit none (type, external)
 
-    character(*), parameter :: PROXY_FRONT_URL = 'tcp://localhost:3327'
-    character(*), parameter :: PROXY_BACK_URL  = 'tcp://localhost:3328'
+    character(80) :: name, type, url
 
-    integer            :: rc
-    type(nng_socket)   :: sock_back, sock_front
-    type(nng_listener) :: ls_back, ls_front
+    call get_command_argument(1, type)
+    call get_command_argument(2, url)
+    call get_command_argument(3, name)
 
-    print '("nng version: ", a)', nng_version()
-
-    ! First we need some nng sockets. Not to be confused with network sockets.
-    rc = nng_sub0_open_raw(sock_front)
-    if (rc /= 0) call error(rc, 'Failed to open front end socket')
-
-    rc = nng_pub0_open_raw(sock_back)
-    if (rc /= 0) call error(rc, 'Failed to open back end socket')
-
-    ! Now we need to set up a listener for each socket so that they have addresses.
-    rc = nng_listener_create(ls_front, sock_front, PROXY_FRONT_URL // c_null_char)
-    if (rc /= 0) call error(rc, 'Failed to create front listener')
-
-    rc = nng_listener_create(ls_back, sock_back, PROXY_BACK_URL // c_null_char)
-    if (rc /= 0) call error(rc, 'Failed to create back listener')
-
-    rc = nng_listener_start(ls_front, 0)
-    if (rc /= 0) call error(rc, 'Failed to start front listener')
-
-    rc = nng_listener_start(ls_back, 0)
-    if (rc /= 0) call error(rc, 'Failed to start back listener')
-
-    ! Finally let nng do the forwarding/proxying.
-    rc = nng_device(sock_front, sock_back)
-    if (rc /= 0) call error(rc, 'nng_device failed')
-
-    print '("done")'
-    call nng_fini()
+    select case (type)
+        case ('client'); call client(url, name)
+        case ('server'); call server(url)
+        case default;    print '("Usage: pubsub client|server <URL> <ARG> ...")'
+    end select
 contains
-    subroutine error(rc, str)
+    function iso8601()
+        character(len=*), parameter :: ISO_FMT = &
+            '(i4, 2("-", i2.2), "T", 2(i0.2, ":"), i0.2, ".", i0.3, a, ":", a)'
+
+        character(len=29) :: iso8601
+        character(len=5)  :: zone
+        integer           :: dt(8)
+
+        call date_and_time(values=dt, zone=zone)
+        write (iso8601, ISO_FMT) dt(1), dt(2), dt(3), dt(5), dt(6), dt(7), dt(8), zone(1:3), zone(4:5)
+    end function iso8601
+
+    subroutine fatal(rc, str)
         integer,      intent(in) :: rc
         character(*), intent(in) :: str
 
         print '(a, ": ", a)', str, nng_strerror(rc)
-        call nng_fini()
         stop
-    end subroutine error
+    end subroutine fatal
+
+    subroutine client(url, name)
+        character(*), intent(in) :: url
+        character(*), intent(in) :: name
+
+        character(29), target :: buffer
+        integer               :: rc
+        integer(c_size_t)     :: sz
+        type(nng_dialer)      :: dialer
+        type(nng_socket)      :: socket
+
+        rc = nng_sub0_open(socket)
+        if (rc /= 0) call fatal(rc, 'nng_sub0_open')
+
+        ! Subscribe to everything (empty means all topics). Do not set the topic
+        ! with nng_socket_set_string(), instead we just set the value to an
+        ! arbitrary string with target attribute and pass size 0.
+        rc = nng_socket_set(socket, NNG_OPT_SUB_SUBSCRIBE, c_loc(buffer), 0_c_size_t)
+        if (rc /= 0) call fatal(rc, 'nng_socket_set_string')
+
+        print '("[CLIENT ", a, "] CONNECTING TO ", a)', trim(name), trim(url)
+
+        rc = nng_dial(socket, trim(url) // c_null_char, dialer, 0)
+        if (rc /= 0) call fatal(rc, 'nng_dial')
+
+        do
+            buffer = ' '
+            sz = len(buffer, c_size_t)
+
+            rc = nng_recv(socket, c_loc(buffer), sz, 0)
+            if (rc /= 0) call fatal(rc, 'nng_recv')
+
+            if (sz /= len(buffer)) then
+                print '("[CLIENT] RECEIVED UNEXPECTED MESSAGE")'
+                cycle
+            end if
+
+            print '("[CLIENT ", a, "] RECEIVED ", a)', trim(name), buffer
+        end do
+
+        rc = nng_socket_close(socket)
+        if (rc /= 0) call fatal(rc, 'nng_socket_close')
+    end subroutine client
+
+    subroutine server(url)
+        character(*), intent(in) :: url
+
+        character(29), target :: date
+        integer               :: rc
+        type(nng_listener)    :: listener
+        type(nng_socket)      :: socket
+
+        rc = nng_pub0_open(socket)
+        if (rc /= 0) call fatal(rc, 'nng_pub0_open')
+
+        rc = nng_listen(socket, trim(url) // c_null_char, listener, 0)
+        if (rc /= 0) call fatal(rc, 'nng_listen')
+
+        do
+            date = iso8601()
+            print '("[SERVER] PUBLISHING DATE ", a)', date
+
+            rc = nng_send(socket, c_loc(date), len(date, kind=c_size_t), 0)
+            if (rc /= 0) call fatal(rc, 'nng_listen')
+
+            call nng_msleep(1000)
+        end do
+
+        rc = nng_socket_close(socket)
+        if (rc /= 0) call fatal(rc, 'nng_socket_close')
+    end subroutine server
 end program main

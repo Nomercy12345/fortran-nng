@@ -4,7 +4,6 @@
 ! Licence: ISC
 module nng_util
     !! Utility routines.
-    use, intrinsic :: iso_c_binding
     implicit none (type, external)
     private
 
@@ -12,6 +11,8 @@ module nng_util
 contains
     subroutine c_f_str_ptr(c_str, f_str)
         !! Copies a C string, passed as a C pointer, to a Fortran string.
+        use, intrinsic :: iso_c_binding, only: c_char, c_ptr, c_size_t, c_associated, c_f_pointer
+
         type(c_ptr),               intent(in)  :: c_str
         character(:), allocatable, intent(out) :: f_str
 

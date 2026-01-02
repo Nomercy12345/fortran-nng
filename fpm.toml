@@ -27,6 +27,11 @@ source-dir = "examples"
 main = "pubsub.f90"
 
 [[example]]
+name = "pubsub_forwarder"
+source-dir = "examples"
+main = "pubsub_forwarder.f90"
+
+[[example]]
 name = "reqrep"
 source-dir = "examples"
 main = "reqrep.f90"

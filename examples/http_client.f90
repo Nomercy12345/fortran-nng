@@ -12,10 +12,6 @@ program main
     !! It may not work on all systems, but it should work anywhere that both the
     !! standard C library and NNG itself are available.
     !!
-    !! We check for errors, but no effort is made to clean up resources, since
-    !! this program just exits. In longer running programs or libraries, callers
-    !! should take care to clean up things that they allocate.
-    !!
     !! Unfortunately many famous sites use redirects, so you won't see that
     !! emitted.
     !!

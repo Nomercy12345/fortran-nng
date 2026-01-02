@@ -1,4 +1,4 @@
-/* Macro replacements for Fortran bindings. */
+/* Macro replacements and wrappers around variadic functions. */
 #include <nng/nng.h>
 
 #ifdef __cplusplus
