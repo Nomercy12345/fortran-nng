@@ -105,6 +105,7 @@ fortran-nng = { git = "https://github.com/interkosmos/fortran-nng.git" }
 
 The following programs can be found in directory `examples/`:
 
+* **async** implements an asynchronous RPC service.
 * **bus** creates an interconnected mesh network.
 * **http_client** sends an HTTP GET request and outputs the response.
 * **pair** shows one-to-one peer relationship.
@@ -162,6 +163,7 @@ browser.
 
 * [NNG Web Site](https://nng.nanomsg.org/)
 * [NNG Repository](https://github.com/nanomsg/nng)
+* [NNG Reference Manual](https://nng.nanomsg.org/ref/preface.html)
 * [NNG API Documentation](https://nng.nanomsg.org/man/v1.10.0/index.html) (v1.10.0)
 * [Getting Started with NNG](https://nanomsg.org/gettingstarted/nng/index.html)
 

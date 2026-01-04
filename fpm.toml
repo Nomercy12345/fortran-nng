@@ -17,6 +17,11 @@ source-dir = "src"
 library = true
 
 [[example]]
+name = "async"
+source-dir = "examples"
+main = "async.f90"
+
+[[example]]
 name = "bus"
 source-dir = "examples"
 main = "bus.f90"

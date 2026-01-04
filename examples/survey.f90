@@ -3,10 +3,10 @@
 ! Author:  Philipp Engel
 ! Licence: ISC
 program main
-    !! Implementation of the survey pattern. The surveyor pattern is used to
-    !! send a timed survey out, responses are individually returned until the
-    !! survey has expired. This pattern is useful for service discovery and
-    !! voting algorithms. The program is based on the example in C listed in:
+    !! Implementation of the surveyor pattern that is used to send a timed
+    !! survey out, responses are individually returned until the survey has
+    !! expired. This pattern is useful for service discovery and voting
+    !! algorithms. The program is based on the example in C listed in:
     !!
     !!     https://nanomsg.org/gettingstarted/nng/survey.html
     !!
@@ -34,7 +34,7 @@ program main
     select case (type)
         case ('client'); call client(url, name)
         case ('server'); call server(url)
-        case default;   print '("Usage: survey client|server <URL> <ARG> ...")'
+        case default;    print '("Usage: survey client|server <URL> <ARG> ...")'
     end select
 contains
     subroutine fatal(rc, str)
