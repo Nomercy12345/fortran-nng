@@ -4,11 +4,13 @@
 ! Licence: ISC
 module nng_util
     !! Utility routines.
+    use :: nng
     implicit none (type, external)
     private
 
     public :: c_f_str_ptr
     public :: f_c_str
+    public :: nng_error_string
 contains
     subroutine c_f_str_ptr(c_str, f_str)
         !! Copies a C string, passed as a C pointer, to a Fortran string.
@@ -56,4 +58,14 @@ contains
 
         c_str = trim(f_str) // c_null_char
     end function f_c_str
+
+    function nng_error_string(error_code) result(error_str)
+        !! Converts an NNG error code to a human-readable string
+        use, intrinsic :: iso_c_binding, only: c_int
+
+        integer(c_int), intent(in) :: error_code
+        character(:), allocatable  :: error_str
+
+        error_str = nng_strerror(error_code)
+    end function nng_error_string
 end module nng_util
