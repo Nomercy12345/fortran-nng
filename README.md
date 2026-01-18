@@ -2,7 +2,7 @@
 
 ## 🚀 Getting Started
 
-Welcome to the fortran-nng application! This software provides an easy-to-use Fortran 2018 interface to the NNG messaging library. With fortran-nng, you can send messages between applications or processes smoothly and efficiently. 
+Welcome to the fortran-nng application! This software provides an easy-to-use Fortran 2018 interface to the NNG messaging library. With fortran-nng, you can send messages between applications or processes smoothly and efficiently.
 
 ## 📦 Download & Install
 
@@ -72,7 +72,7 @@ For detailed usage instructions and advanced features, check our [Documentation]
 
 ## 🛠 Support & Contributions
 
-If you encounter issues or have questions, feel free to create a new issue in this repository. We appreciate your feedback and contributions. 
+If you encounter issues or have questions, feel free to create a new issue in this repository. We appreciate your feedback and contributions.
 
 ### 🙌 Contributing
 
@@ -102,6 +102,6 @@ For inquiries or assistance, reach out via our GitHub page. We are here to help 
 
 ## 📅 Stay Updated
 
-Check the Releases page regularly for updates and new features. Your feedback helps us improve the application. 
+Check the Releases page regularly for updates and new features. Your feedback helps us improve the application.
 
 Thank you for choosing fortran-nng! Happy coding!

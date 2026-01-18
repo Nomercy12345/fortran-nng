@@ -47,7 +47,7 @@ OBJ = nng.o \
 
 all: $(TARGET)
 
-examples: async bus http_client pair pipeline pubsub pubsub_forwarder reqrep survey
+examples: async bus http_client pair pipeline pubsub pubsub_forwarder reqrep survey error_demo
 
 $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) -c src/nng_macro.c
@@ -90,6 +90,9 @@ reqrep: $(TARGET) examples/reqrep.f90
 survey: $(TARGET) examples/survey.f90
 	$(FC) $(FFLAGS) $(LDFLAGS) -o survey examples/survey.f90 $(TARGET) $(LDLIBS)
 
+error_demo: $(TARGET) examples/error_demo.f90
+	$(FC) $(FFLAGS) $(LDFLAGS) -o error_demo examples/error_demo.f90 $(TARGET) $(LDLIBS)
+
 doc:
 	$(FORD) ford.md
 
@@ -123,3 +126,4 @@ clean:
 	$(RM) -rf pubsub_forwarder
 	$(RM) -rf reqrep
 	$(RM) -rf survey
+	$(RM) -rf error_demo
